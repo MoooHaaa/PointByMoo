@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pointe</title>
+
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #f3f4f6;
+        --glass: rgba(255, 255, 255, 0.6);
+        --card: #ffffff;
+        --input: #eef2ff;
+        --text: #111;
+        --primary: #4f46e5;
+        --green: #16a34a;
+        --red: #dc2626;
+        --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+
+      body.dark {
+        --bg: #0f172a;
+        --glass: rgba(30, 41, 59, 0.6);
+        --card: #1e293b;
+        --input: #2a3447;
+        --text: #e2e8f0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont;
+        background: var(--bg);
+        color: var(--text);
+        padding: 12px;
+        transition: 0.3s;
+      }
+
+      /* HEADER */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 26px;
+        font-weight: 700;
+        background: linear-gradient(45deg, #4f46e5, #06b6d4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .logo span {
+        font-size: 12px;
+        margin-left: 6px;
+        color: var(--text);
+        -webkit-text-fill-color: var(--text);
+      }
+
+      .right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .toggle {
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .toggle:hover {
+        transform: rotate(20deg) scale(1.1);
+      }
+
+      .insta {
+        font-size: 20px;
+        color: var(--text);
+        transition: 0.3s;
+      }
+      .insta:hover {
+        color: #e1306c;
+        transform: scale(1.2);
+      }
+      .insta:active {
+        transform: scale(0.9);
+      }
+
+      /* CARD */
+      .card {
+        background: var(--glass);
+        backdrop-filter: blur(14px);
+        padding: 12px;
+        border-radius: 14px;
+        margin-top: 10px;
+      }
+
+      /* GRID */
+      .top {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      /* INPUT */
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 10px;
+        border: none;
+        background: var(--input);
+        color: var(--text);
+        transition: 0.25s var(--ease);
+      }
+      input:focus {
+        transform: scale(1.03);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        outline: none;
+      }
+
+      /* MODULE */
+      .module {
+        background: var(--card);
+        padding: 12px;
+        border-radius: 14px;
+        margin-top: 10px;
+        animation: fadeIn 0.4s var(--ease);
+        transition: 0.25s;
+      }
+      .module:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .removing {
+        animation: remove 0.3s forwards;
+      }
+      @keyframes remove {
+        to {
+          opacity: 0;
+          transform: translateX(80px);
+        }
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .note {
+        text-align: center;
+        font-weight: bold;
+        margin-top: 5px;
+      }
+      .need {
+        text-align: center;
+        font-size: 12px;
+      }
+
+      .green {
+        color: var(--green);
+      }
+      .red {
+        color: var(--red);
+      }
+
+      /* BUTTON */
+      button {
+        border: none;
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .add {
+        width: 100%;
+        background: linear-gradient(45deg, #4f46e5, #06b6d4);
+        color: white;
+        margin-top: 10px;
+      }
+      .add:hover {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+      }
+      .add:active {
+        transform: scale(0.96);
+      }
+
+      .del {
+        background: #ef4444;
+        color: white;
+        margin-top: 5px;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header">
+      <div class="logo">
+        Pointe
+        <span>by Moo</span>
+      </div>
+
+      <div class="right">
+        <a href="https://www.instagram.com/moo.in2k/" target="_blank" class="insta">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <div class="toggle" onclick="toggleDark()">🌙</div>
+      </div>
+    </div>
+
+    <div class="top">
+      <div class="card">
+        S1
+        <input id="s1" type="number" />
+      </div>
+      <div class="card">
+        S2
+        <div id="s2">0</div>
+      </div>
+      <div class="card">
+        Year
+        <div id="year">0</div>
+      </div>
+      <div class="card">
+        Status
+        <div id="status">-</div>
+      </div>
+    </div>
+
+    <div class="card">
+      🎯 Needed to pass:
+      <div id="needed">-</div>
+    </div>
+
+    <button class="add" onclick="addModule()">+ Add Module</button>
+
+    <div id="modules"></div>
+
+    <script>
+      function addModule(data = {}) {
+        let div = document.createElement("div");
+        div.className = "module";
+
+        div.innerHTML = `
+<input class="name" placeholder="Module" value="${data.name || ""}">
+<div class="row">
+<input class="coef" type="number" placeholder="Coef" value="${data.coef || ""}">
+<input class="exam" type="number" placeholder="Exam" value="${data.exam || ""}">
+</div>
+
+<div class="row">
+<input class="td" type="number" placeholder="TD" value="${data.td || ""}">
+<input class="tp" type="number" placeholder="TP (optional)" value="${data.tp || ""}">
+</div>
+
+<button class="del">Delete</button>
+
+<div class="note">0</div>
+<div class="need">-</div>
+`;
+
+        document.getElementById("modules").appendChild(div);
+
+        div.querySelectorAll("input").forEach((i) => (i.oninput = calculate));
+
+        div.querySelector(".del").onclick = () => {
+          div.classList.add("removing");
+          setTimeout(() => {
+            div.remove();
+            calculate();
+          }, 300);
+        };
+
+        calculate();
+      }
+
+      function calculate() {
+        let modules = document.querySelectorAll(".module");
+
+        let total = 0,
+          coefSum = 0,
+          data = [];
+
+        modules.forEach((m) => {
+          let exam = parseFloat(m.querySelector(".exam").value) || 0;
+          let td = parseFloat(m.querySelector(".td").value) || 0;
+          let coef = parseFloat(m.querySelector(".coef").value) || 0;
+
+          let tpVal = m.querySelector(".tp").value;
+          let tp = parseFloat(tpVal);
+
+          let note;
+
+          if (tpVal === "" || isNaN(tp)) {
+            note = exam * 0.6 + td * 0.4;
+          } else {
+            note = exam * 0.6 + td * 0.2 + tp * 0.2;
+          }
+
+          let n = m.querySelector(".note");
+          n.innerText = note.toFixed(2);
+          n.className = "note " + (note >= 10 ? "green" : "red");
+
+          let need;
+          if (tpVal === "" || isNaN(tp)) {
+            need = (10 - td * 0.4) / 0.6;
+          } else {
+            need = (10 - (td * 0.2 + tp * 0.2)) / 0.6;
+          }
+
+          let needDiv = m.querySelector(".need");
+
+          if (note >= 10) {
+            needDiv.innerText = "✔ Passed";
+            needDiv.className = "need green";
+          } else if (need <= 20) {
+            needDiv.innerText = "Need Exam ≈ " + need.toFixed(2);
+            needDiv.className = "need red";
+          } else {
+            needDiv.innerText = "Impossible";
+            needDiv.className = "need red";
+          }
+
+          total += note * coef;
+          coefSum += coef;
+
+          data.push({
+            name: m.querySelector(".name").value,
+            exam,
+            td,
+            tp: tpVal,
+            coef,
+          });
+        });
+
+        let s2 = coefSum ? total / coefSum : 0;
+        let s1 = parseFloat(document.getElementById("s1").value);
+        let year = !isNaN(s1) ? (s1 + s2) / 2 : s2;
+
+        document.getElementById("s2").innerText = s2.toFixed(2);
+        document.getElementById("year").innerText = year.toFixed(2);
+
+        let status = document.getElementById("status");
+        status.innerText = year >= 10 ? "Admitted" : "Retake";
+        status.className = year >= 10 ? "green" : "red";
+
+        let needed = document.getElementById("needed");
+
+        if (year >= 10) {
+          needed.innerText = "You passed ✔";
+        } else {
+          if (!isNaN(s1)) {
+            needed.innerText = "Need S2 ≈ " + (20 - s1).toFixed(2);
+          } else {
+            needed.innerText = "Need ≥ 10";
+          }
+        }
+
+        localStorage.setItem("modules", JSON.stringify(data));
+        localStorage.setItem("s1", isNaN(s1) ? "" : s1);
+      }
+
+      function load() {
+        let data = JSON.parse(localStorage.getItem("modules")) || [];
+        let s1 = localStorage.getItem("s1");
+
+        if (s1) document.getElementById("s1").value = s1;
+
+        if (data.length) data.forEach(addModule);
+        else addModule();
+      }
+
+      function toggleDark() {
+        document.body.classList.toggle("dark");
+      }
+
+      document.getElementById("s1").oninput = calculate;
+
+      window.onload = load;
+    </script>
+  </body>
+</html>
