@@ -61,7 +61,6 @@
         font-size: 12px;
         margin-left: 6px;
         color: var(--text);
-        -webkit-text-fill-color: var(--text);
       }
 
       .right {
@@ -72,20 +71,10 @@
 
       .toggle {
         cursor: pointer;
-        transition: 0.4s;
       }
-      .toggle:hover {
-        transform: rotate(20deg) scale(1.15);
-      }
-
       .insta {
         font-size: 20px;
         color: var(--text);
-        transition: 0.4s;
-      }
-      .insta:hover {
-        color: #e1306c;
-        transform: scale(1.25);
       }
 
       /* CARD */
@@ -97,19 +86,13 @@
         margin-top: 10px;
         transition: 0.4s;
       }
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-      }
 
-      /* GRID */
       .top {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
       }
 
-      /* INPUT */
       input {
         width: 100%;
         padding: 10px;
@@ -118,12 +101,6 @@
         border: none;
         background: var(--input);
         color: var(--text);
-        transition: 0.3s;
-      }
-      input:focus {
-        transform: scale(1.04);
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        outline: none;
       }
 
       /* MODULE */
@@ -133,33 +110,16 @@
         border-radius: 14px;
         margin-top: 10px;
         animation: slideIn 0.5s var(--ease);
-        transition: 0.3s;
-      }
-
-      .module:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       }
 
       @keyframes slideIn {
         from {
           opacity: 0;
-          transform: translateY(-20px) scale(0.97);
+          transform: translateY(-20px);
         }
         to {
           opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-
-      .removing {
-        animation: removeAnim 0.35s forwards;
-      }
-
-      @keyframes removeAnim {
-        to {
-          opacity: 0;
-          transform: scale(0.9) translateX(40px);
+          transform: translateY(0);
         }
       }
 
@@ -186,13 +146,11 @@
         color: var(--red);
       }
 
-      /* BUTTON */
       button {
         border: none;
         padding: 10px;
         border-radius: 10px;
         cursor: pointer;
-        transition: 0.25s;
       }
 
       .add {
@@ -201,19 +159,17 @@
         color: white;
         margin-top: 10px;
       }
-      .add:hover {
-        transform: scale(1.04);
-        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
-      }
-      .add:active {
-        transform: scale(0.95);
-      }
 
       .del {
         background: #ef4444;
         color: white;
         margin-top: 5px;
         width: 100%;
+      }
+
+      label {
+        font-size: 12px;
+        opacity: 0.7;
       }
     </style>
   </head>
@@ -252,9 +208,21 @@
       </div>
     </div>
 
+    <!-- COEF CONTROL -->
     <div class="card">
-      🎯 Needed to pass:
-      <div id="needed">-</div>
+      ⚙️ Coefficients (must = 1)
+      <div class="row">
+        <div>
+          <label>Exam Coef</label>
+          <input id="examCoef" type="number" step="0.1" value="0.6" />
+        </div>
+
+        <div>
+          <label>TD Coef</label>
+          <input id="tdCoef" type="number" step="0.1" value="0.4" />
+        </div>
+      </div>
+      <div id="coefError" style="color: red; font-size: 12px"></div>
     </div>
 
     <button class="add" onclick="addModule()">+ Add Module</button>
@@ -275,7 +243,7 @@
 
 <div class="row">
 <input class="td" type="number" placeholder="TD" value="${data.td || ""}">
-<input class="tp" type="number" placeholder="TP (optional)" value="${data.tp || ""}">
+<input class="tp" type="number" placeholder="TP" value="${data.tp || ""}">
 </div>
 
 <button class="del">Delete</button>
@@ -289,17 +257,27 @@
         div.querySelectorAll("input").forEach((i) => (i.oninput = calculate));
 
         div.querySelector(".del").onclick = () => {
-          div.classList.add("removing");
-          setTimeout(() => {
-            div.remove();
-            calculate();
-          }, 350);
+          div.remove();
+          calculate();
         };
 
         calculate();
       }
 
       function calculate() {
+        let examCoef = parseFloat(document.getElementById("examCoef").value) || 0;
+        let tdCoef = parseFloat(document.getElementById("tdCoef").value) || 0;
+
+        let error = document.getElementById("coefError");
+
+        /* VALIDATION */
+        if ((examCoef + tdCoef).toFixed(2) != 1) {
+          error.innerText = "Sum must be exactly 1";
+          return;
+        } else {
+          error.innerText = "";
+        }
+
         let modules = document.querySelectorAll(".module");
 
         let total = 0,
@@ -318,31 +296,32 @@
 
           let note;
 
-          /* الحالات الثلاث */
+          /* LOGIC */
           if ((tdVal === "" || isNaN(td)) && (tpVal === "" || isNaN(tp))) {
             note = exam;
           } else if (tpVal === "" || isNaN(tp)) {
-            note = exam * 0.6 + td * 0.4;
+            note = exam * examCoef + td * tdCoef;
           } else {
-            note = exam * 0.6 + td * 0.2 + tp * 0.2;
+            let shared = tdCoef / 2;
+            note = exam * examCoef + td * shared + tp * shared;
           }
 
           let n = m.querySelector(".note");
           n.innerText = note.toFixed(2);
           n.className = "note " + (note >= 10 ? "green" : "red");
 
-          /* Needed */
+          /* NEED */
           let need;
+          let needDiv = m.querySelector(".need");
 
           if ((tdVal === "" || isNaN(td)) && (tpVal === "" || isNaN(tp))) {
             need = 10;
           } else if (tpVal === "" || isNaN(tp)) {
-            need = (10 - td * 0.4) / 0.6;
+            need = (10 - td * tdCoef) / examCoef;
           } else {
-            need = (10 - (td * 0.2 + tp * 0.2)) / 0.6;
+            let shared = tdCoef / 2;
+            need = (10 - (td * shared + tp * shared)) / examCoef;
           }
-
-          let needDiv = m.querySelector(".need");
 
           if (note >= 10) {
             needDiv.innerText = "✔ Passed";
@@ -378,18 +357,6 @@
         status.innerText = year >= 10 ? "Admitted" : "Retake";
         status.className = year >= 10 ? "green" : "red";
 
-        let needed = document.getElementById("needed");
-
-        if (year >= 10) {
-          needed.innerText = "You passed ✔";
-        } else {
-          if (!isNaN(s1)) {
-            needed.innerText = "Need S2 ≈ " + (20 - s1).toFixed(2);
-          } else {
-            needed.innerText = "Need ≥ 10";
-          }
-        }
-
         localStorage.setItem("modules", JSON.stringify(data));
         localStorage.setItem("s1", isNaN(s1) ? "" : s1);
       }
@@ -409,6 +376,8 @@
       }
 
       document.getElementById("s1").oninput = calculate;
+      document.getElementById("examCoef").oninput = calculate;
+      document.getElementById("tdCoef").oninput = calculate;
 
       window.onload = load;
     </script>
