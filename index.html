@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pointe</title>
 
+    <!-- ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
     <style>
       * {
         box-sizing: border-box;
@@ -21,7 +24,6 @@
         --primary: #4f46e5;
         --green: #16a34a;
         --red: #dc2626;
-
         --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
       }
 
@@ -38,9 +40,7 @@
         background: var(--bg);
         color: var(--text);
         padding: 12px;
-        transition:
-          background 0.4s var(--ease),
-          color 0.4s var(--ease);
+        transition: 0.3s;
       }
 
       /* HEADER */
@@ -65,12 +65,31 @@
         -webkit-text-fill-color: var(--text);
       }
 
+      .right {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
       .toggle {
         cursor: pointer;
-        transition: transform 0.3s var(--ease);
+        transition: 0.3s;
       }
       .toggle:hover {
         transform: rotate(20deg) scale(1.1);
+      }
+
+      .insta {
+        font-size: 20px;
+        color: var(--text);
+        transition: 0.3s;
+      }
+      .insta:hover {
+        color: #e1306c;
+        transform: scale(1.2);
+      }
+      .insta:active {
+        transform: scale(0.9);
       }
 
       /* CARD */
@@ -80,13 +99,6 @@
         padding: 12px;
         border-radius: 14px;
         margin-top: 10px;
-        transition:
-          transform 0.3s var(--ease),
-          box-shadow 0.3s var(--ease);
-      }
-      .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       }
 
       /* GRID */
@@ -105,7 +117,7 @@
         border: none;
         background: var(--input);
         color: var(--text);
-        transition: all 0.25s var(--ease);
+        transition: 0.25s var(--ease);
       }
       input:focus {
         transform: scale(1.03);
@@ -119,12 +131,8 @@
         padding: 12px;
         border-radius: 14px;
         margin-top: 10px;
-        transform: translateY(15px);
-        opacity: 0;
-        animation: fadeIn 0.4s var(--ease) forwards;
-        transition:
-          transform 0.25s var(--ease),
-          box-shadow 0.25s var(--ease);
+        animation: fadeIn 0.4s var(--ease);
+        transition: 0.25s;
       }
       .module:hover {
         transform: translateY(-2px);
@@ -132,17 +140,20 @@
       }
 
       @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
         to {
-          transform: translateY(0);
           opacity: 1;
+          transform: translateY(0);
         }
       }
 
-      /* DELETE ANIMATION */
       .removing {
-        animation: removeAnim 0.3s forwards;
+        animation: remove 0.3s forwards;
       }
-      @keyframes removeAnim {
+      @keyframes remove {
         to {
           opacity: 0;
           transform: translateX(80px);
@@ -159,13 +170,10 @@
         text-align: center;
         font-weight: bold;
         margin-top: 5px;
-        transition: 0.3s;
       }
-
       .need {
         text-align: center;
         font-size: 12px;
-        transition: 0.3s;
       }
 
       .green {
@@ -181,9 +189,7 @@
         padding: 10px;
         border-radius: 10px;
         cursor: pointer;
-        transition:
-          transform 0.2s var(--ease),
-          box-shadow 0.2s;
+        transition: 0.2s;
       }
 
       .add {
@@ -206,12 +212,6 @@
         margin-top: 5px;
         width: 100%;
       }
-      .del:hover {
-        transform: scale(1.05);
-      }
-      .del:active {
-        transform: scale(0.95);
-      }
     </style>
   </head>
 
@@ -221,7 +221,13 @@
         Pointe
         <span>by Moo</span>
       </div>
-      <div class="toggle" onclick="toggleDark()">🌙</div>
+
+      <div class="right">
+        <a href="https://www.instagram.com/moo.in2k/" target="_blank" class="insta">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <div class="toggle" onclick="toggleDark()">🌙</div>
+      </div>
     </div>
 
     <div class="top">
@@ -279,7 +285,6 @@
 
         div.querySelectorAll("input").forEach((i) => (i.oninput = calculate));
 
-        /* DELETE ANIMATION */
         div.querySelector(".del").onclick = () => {
           div.classList.add("removing");
           setTimeout(() => {
@@ -295,8 +300,8 @@
         let modules = document.querySelectorAll(".module");
 
         let total = 0,
-          coefSum = 0;
-        let data = [];
+          coefSum = 0,
+          data = [];
 
         modules.forEach((m) => {
           let exam = parseFloat(m.querySelector(".exam").value) || 0;
@@ -318,7 +323,6 @@
           n.innerText = note.toFixed(2);
           n.className = "note " + (note >= 10 ? "green" : "red");
 
-          /* Needed exam */
           let need;
           if (tpVal === "" || isNaN(tp)) {
             need = (10 - td * 0.4) / 0.6;
