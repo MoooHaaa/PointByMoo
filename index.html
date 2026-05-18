@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pointe</title>
 
-    <!-- ICONS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <style>
@@ -24,7 +23,9 @@
         --primary: #4f46e5;
         --green: #16a34a;
         --red: #dc2626;
-        --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        /* smoother easing */
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
       }
 
       body.dark {
@@ -40,7 +41,9 @@
         background: var(--bg);
         color: var(--text);
         padding: 12px;
-        transition: 0.3s;
+        transition:
+          background 0.5s var(--ease),
+          color 0.5s var(--ease);
       }
 
       /* HEADER */
@@ -73,23 +76,20 @@
 
       .toggle {
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.4s var(--ease);
       }
       .toggle:hover {
-        transform: rotate(20deg) scale(1.1);
+        transform: rotate(20deg) scale(1.15);
       }
 
       .insta {
         font-size: 20px;
         color: var(--text);
-        transition: 0.3s;
+        transition: 0.4s var(--ease);
       }
       .insta:hover {
         color: #e1306c;
-        transform: scale(1.2);
-      }
-      .insta:active {
-        transform: scale(0.9);
+        transform: scale(1.25);
       }
 
       /* CARD */
@@ -99,6 +99,11 @@
         padding: 12px;
         border-radius: 14px;
         margin-top: 10px;
+        transition: 0.4s var(--ease);
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
       }
 
       /* GRID */
@@ -117,10 +122,10 @@
         border: none;
         background: var(--input);
         color: var(--text);
-        transition: 0.25s var(--ease);
+        transition: 0.3s var(--ease);
       }
       input:focus {
-        transform: scale(1.03);
+        transform: scale(1.04);
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
         outline: none;
       }
@@ -131,32 +136,41 @@
         padding: 12px;
         border-radius: 14px;
         margin-top: 10px;
-        animation: fadeIn 0.4s var(--ease);
-        transition: 0.25s;
-      }
-      .module:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+
+        /* smooth appear */
+        animation: slideIn 0.5s var(--ease);
+
+        transition:
+          transform 0.3s var(--ease),
+          box-shadow 0.3s var(--ease);
       }
 
-      @keyframes fadeIn {
+      .module:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      /* ENTRY */
+      @keyframes slideIn {
         from {
           opacity: 0;
-          transform: translateY(15px);
+          transform: translateY(-20px) scale(0.97);
         }
         to {
           opacity: 1;
-          transform: translateY(0);
+          transform: translateY(0) scale(1);
         }
       }
 
+      /* DELETE */
       .removing {
-        animation: remove 0.3s forwards;
+        animation: removeAnim 0.35s var(--ease) forwards;
       }
-      @keyframes remove {
+
+      @keyframes removeAnim {
         to {
           opacity: 0;
-          transform: translateX(80px);
+          transform: scale(0.9) translateX(40px);
         }
       }
 
@@ -170,10 +184,13 @@
         text-align: center;
         font-weight: bold;
         margin-top: 5px;
+        transition: 0.3s;
       }
+
       .need {
         text-align: center;
         font-size: 12px;
+        transition: 0.3s;
       }
 
       .green {
@@ -189,7 +206,7 @@
         padding: 10px;
         border-radius: 10px;
         cursor: pointer;
-        transition: 0.2s;
+        transition: 0.25s var(--ease);
       }
 
       .add {
@@ -199,11 +216,11 @@
         margin-top: 10px;
       }
       .add:hover {
-        transform: scale(1.03);
-        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+        transform: scale(1.04);
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
       }
       .add:active {
-        transform: scale(0.96);
+        transform: scale(0.95);
       }
 
       .del {
@@ -211,6 +228,9 @@
         color: white;
         margin-top: 5px;
         width: 100%;
+      }
+      .del:hover {
+        transform: scale(1.05);
       }
     </style>
   </head>
@@ -281,16 +301,18 @@
 <div class="need">-</div>
 `;
 
-        document.getElementById("modules").appendChild(div);
+        /* 🔥 ADD TO TOP */
+        document.getElementById("modules").prepend(div);
 
         div.querySelectorAll("input").forEach((i) => (i.oninput = calculate));
 
+        /* DELETE ANIMATION */
         div.querySelector(".del").onclick = () => {
           div.classList.add("removing");
           setTimeout(() => {
             div.remove();
             calculate();
-          }, 300);
+          }, 350);
         };
 
         calculate();
@@ -388,7 +410,8 @@
 
         if (s1) document.getElementById("s1").value = s1;
 
-        if (data.length) data.forEach(addModule);
+        /* maintain order */
+        if (data.length) data.reverse().forEach(addModule);
         else addModule();
       }
 
