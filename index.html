@@ -44,7 +44,6 @@
         transition: 0.5s var(--ease);
       }
 
-      /* HEADER */
       .header {
         display: flex;
         justify-content: space-between;
@@ -74,12 +73,12 @@
       .toggle {
         cursor: pointer;
       }
+
       .insta {
         font-size: 20px;
         color: var(--text);
       }
 
-      /* CARD */
       .card {
         background: var(--glass);
         backdrop-filter: blur(14px);
@@ -88,19 +87,18 @@
         margin-top: 10px;
         transition: 0.4s var(--smooth);
       }
+
       .card:hover {
         transform: translateY(-4px);
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
       }
 
-      /* GRID */
       .top {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
       }
 
-      /* INPUT */
       input {
         width: 100%;
         padding: 10px;
@@ -126,7 +124,6 @@
         transform: scale(0.98);
       }
 
-      /* MODULE */
       .module {
         background: var(--card);
         padding: 12px;
@@ -158,6 +155,7 @@
       .removing {
         animation: removeAnim 0.3s forwards;
       }
+
       @keyframes removeAnim {
         to {
           opacity: 0;
@@ -176,6 +174,7 @@
         font-weight: bold;
         margin-top: 5px;
       }
+
       .need {
         text-align: center;
         font-size: 12px;
@@ -184,11 +183,11 @@
       .green {
         color: var(--green);
       }
+
       .red {
         color: var(--red);
       }
 
-      /* BUTTON */
       button {
         border: none;
         padding: 10px;
@@ -235,6 +234,7 @@
         <a href="https://www.instagram.com/moo.in2k/" target="_blank" class="insta">
           <i class="fa-brands fa-instagram"></i>
         </a>
+
         <div class="toggle" onclick="toggleDark()">🌙</div>
       </div>
     </div>
@@ -244,14 +244,17 @@
         S1
         <input id="s1" type="number" />
       </div>
+
       <div class="card">
         S2
         <div id="s2">0</div>
       </div>
+
       <div class="card">
         Year
         <div id="year">0</div>
       </div>
+
       <div class="card">
         Status
         <div id="status">-</div>
@@ -260,16 +263,19 @@
 
     <div class="card">
       ⚙️ Coefficients (must = 1)
+
       <div class="row">
         <div>
           <label>Exam Coef</label>
           <input id="examCoef" type="number" step="0.1" value="0.6" />
         </div>
+
         <div>
           <label>TD Coef</label>
           <input id="tdCoef" type="number" step="0.1" value="0.4" />
         </div>
       </div>
+
       <div id="coefError" style="color: red; font-size: 12px"></div>
     </div>
 
@@ -280,46 +286,106 @@
     <script>
       function animateValue(el, start, end, duration = 300) {
         let startTime = null;
+
         function animate(t) {
           if (!startTime) startTime = t;
+
           let p = Math.min((t - startTime) / duration, 1);
           let val = start + (end - start) * p;
+
           el.innerText = val.toFixed(2);
+
           if (p < 1) requestAnimationFrame(animate);
         }
+
         requestAnimationFrame(animate);
       }
 
       function addModule(data = {}) {
         let div = document.createElement("div");
+
         div.className = "module";
 
         div.innerHTML = `
 <input class="name" placeholder="Module" value="${data.name || ""}">
+
 <div class="row">
 <input class="coef" type="number" placeholder="Coef" value="${data.coef || ""}">
 <input class="exam" type="number" placeholder="Exam" value="${data.exam || ""}">
 </div>
+
 <div class="row">
 <input class="td" type="number" placeholder="TD" value="${data.td || ""}">
 <input class="tp" type="number" placeholder="TP" value="${data.tp || ""}">
 </div>
+
 <button class="del">Delete</button>
+
 <div class="note">0</div>
 <div class="need">-</div>
 `;
 
         document.getElementById("modules").prepend(div);
 
-        div.querySelectorAll("input").forEach((i) => (i.oninput = calculate));
+        div.querySelectorAll("input").forEach((i) => {
+          i.oninput = calculate;
+        });
 
         div.querySelector(".del").onclick = () => {
           div.classList.add("removing");
+
           setTimeout(() => {
             div.remove();
             calculate();
           }, 300);
         };
+
+        calculate();
+      }
+
+      function saveData() {
+        let modules = [];
+
+        document.querySelectorAll(".module").forEach((m) => {
+          modules.push({
+            name: m.querySelector(".name").value,
+            coef: m.querySelector(".coef").value,
+            exam: m.querySelector(".exam").value,
+            td: m.querySelector(".td").value,
+            tp: m.querySelector(".tp").value,
+          });
+        });
+
+        localStorage.setItem(
+          "pointeData",
+          JSON.stringify({
+            s1: s1Input.value,
+            examCoef: examCoefInput.value,
+            tdCoef: tdCoefInput.value,
+            darkMode: document.body.classList.contains("dark"),
+            modules,
+          }),
+        );
+      }
+
+      function loadData() {
+        let data = JSON.parse(localStorage.getItem("pointeData"));
+
+        if (!data) return;
+
+        s1Input.value = data.s1 || "";
+        examCoefInput.value = data.examCoef || 0.6;
+        tdCoefInput.value = data.tdCoef || 0.4;
+
+        if (data.darkMode) {
+          document.body.classList.add("dark");
+        }
+
+        document.getElementById("modules").innerHTML = "";
+
+        if (data.modules?.length) {
+          data.modules.forEach((m) => addModule(m));
+        }
 
         calculate();
       }
@@ -331,11 +397,14 @@
         if ((examCoef + tdCoef).toFixed(2) != 1) {
           coefError.innerText = "Sum must be 1";
           return;
-        } else coefError.innerText = "";
+        } else {
+          coefError.innerText = "";
+        }
 
         let modules = document.querySelectorAll(".module");
-        let total = 0,
-          coefSum = 0;
+
+        let total = 0;
+        let coefSum = 0;
 
         modules.forEach((m) => {
           let exam = parseFloat(m.querySelector(".exam").value) || 0;
@@ -346,23 +415,30 @@
 
           let note;
 
-          if (isNaN(td) && isNaN(tp)) note = exam;
-          else if (isNaN(tp)) note = exam * examCoef + td * tdCoef;
-          else {
+          if (isNaN(td) && isNaN(tp)) {
+            note = exam;
+          } else if (isNaN(tp)) {
+            note = exam * examCoef + td * tdCoef;
+          } else {
             let shared = tdCoef / 2;
+
             note = exam * examCoef + td * shared + tp * shared;
           }
 
           let n = m.querySelector(".note");
+
           n.innerText = note.toFixed(2);
           n.className = "note " + (note >= 10 ? "green" : "red");
 
-          /* NEED */
           let need;
-          if (isNaN(td) && isNaN(tp)) need = 10;
-          else if (isNaN(tp)) need = (10 - td * tdCoef) / examCoef;
-          else {
+
+          if (isNaN(td) && isNaN(tp)) {
+            need = 10;
+          } else if (isNaN(tp)) {
+            need = (10 - td * tdCoef) / examCoef;
+          } else {
             let shared = tdCoef / 2;
+
             need = (10 - (td * shared + tp * shared)) / examCoef;
           }
 
@@ -384,23 +460,31 @@
         });
 
         let s2 = coefSum ? total / coefSum : 0;
+
         let s1 = parseFloat(s1Input.value);
+
         let year = !isNaN(s1) ? (s1 + s2) / 2 : s2;
 
         animateValue(s2El, 0, s2);
         animateValue(yearEl, 0, year);
 
         statusEl.innerText = year >= 10 ? "Admitted" : "Retake";
+
         statusEl.className = year >= 10 ? "green" : "red";
+
+        saveData();
       }
 
       function toggleDark() {
         document.body.classList.toggle("dark");
+
+        saveData();
       }
 
       const s1Input = document.getElementById("s1");
       const examCoefInput = document.getElementById("examCoef");
       const tdCoefInput = document.getElementById("tdCoef");
+
       const coefError = document.getElementById("coefError");
 
       const s2El = document.getElementById("s2");
@@ -411,7 +495,11 @@
       examCoefInput.oninput = calculate;
       tdCoefInput.oninput = calculate;
 
-      addModule();
+      loadData();
+
+      if (!document.querySelector(".module")) {
+        addModule();
+      }
     </script>
   </body>
 </html>
